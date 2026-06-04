@@ -14,7 +14,7 @@ export const usePaperStore = defineStore('paper', () => {
   const error = ref(null)
   
   // API 配置
-  const apiUrl = ref('')
+  const apiUrl = ref('https://api.deepseek.com/v1/chat/completions')
   const apiKey = ref('')
   const apiModel = ref('deepseek-v4-flash')
   const useCustomApi = ref(false)
@@ -51,7 +51,7 @@ export const usePaperStore = defineStore('paper', () => {
   }
 
   const setApiConfig = (config) => {
-    apiUrl.value = config.apiUrl || ''
+    apiUrl.value = config.apiUrl || 'https://api.deepseek.com/v1/chat/completions'
     apiKey.value = config.apiKey || ''
     apiModel.value = config.apiModel || 'deepseek-v4-flash'
     useCustomApi.value = config.useCustomApi || false

@@ -36,7 +36,7 @@
               <input 
                 type="text" 
                 v-model="localApiModel" 
-                placeholder="例如: deepseek-v4-pro"
+                placeholder="例如: deepseek-v4-flash"
                 class="form-input"
               />
             </div>
@@ -57,9 +57,9 @@ import { usePaperStore } from '../../store/paper'
 
 const store = usePaperStore()
 const showSettings = ref(false)
-const localApiUrl = ref('')
+const localApiUrl = ref('https://api.deepseek.com/v1/chat/completions')
 const localApiKey = ref('')
-const localApiModel = ref('deepseek-v4-pro')
+const localApiModel = ref('deepseek-v4-flash')
 
 const STORAGE_KEY = 'exam_variator_api_config'
 
@@ -69,9 +69,9 @@ onMounted(() => {
   if (savedConfig) {
     try {
       const config = JSON.parse(savedConfig)
-      localApiUrl.value = config.apiUrl || ''
+      localApiUrl.value = config.apiUrl || 'https://api.deepseek.com/v1/chat/completions'
       localApiKey.value = config.apiKey || ''
-      localApiModel.value = config.apiModel || 'deepseek-v4-pro'
+      localApiModel.value = config.apiModel || 'deepseek-v4-flash'
       // 同步到 store
       store.setApiConfig({
         apiUrl: localApiUrl.value,
