@@ -1,11 +1,5 @@
 <template>
   <div class="paper-toolbar">
-    <div class="toolbar-left">
-      <button class="toolbar-btn" @click="zoomOut">−</button>
-      <span class="zoom-value">{{ zoom }}%</span>
-      <button class="toolbar-btn" @click="zoomIn">+</button>
-      <button class="toolbar-btn" @click="resetZoom">重置</button>
-    </div>
     <div class="toolbar-right">
       <button class="toolbar-btn" @click="exportPDF">PDF</button>
       <button class="toolbar-btn" @click="printPaper">打印</button>
@@ -15,33 +9,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import html2pdf from 'html2pdf.js'
-import printJS from 'print-js'
-
-const zoom = ref(100)
-
-const zoomIn = () => {
-  if (zoom.value < 150) {
-    zoom.value += 10
-    const viewer = document.querySelector('.paper-viewer')
-    if (viewer) viewer.style.transform = `scale(${zoom.value / 100})`
-  }
-}
-
-const zoomOut = () => {
-  if (zoom.value > 50) {
-    zoom.value -= 10
-    const viewer = document.querySelector('.paper-viewer')
-    if (viewer) viewer.style.transform = `scale(${zoom.value / 100})`
-  }
-}
-
-const resetZoom = () => {
-  zoom.value = 100
-  const viewer = document.querySelector('.paper-viewer')
-  if (viewer) viewer.style.transform = 'scale(1)'
-}
+import { ElMessage } from 'element-plus'
 
 const exportPDF = async () => {
   const viewerEl = document.querySelector('.paper-viewer')
@@ -55,26 +24,68 @@ const exportPDF = async () => {
 }
 
 const printPaper = () => {
-  printJS({
-    printable: '.paper-viewer',
-    type: 'html',
-    css: `@page { size: A4; margin: 15mm; }`
-  })
-}
-
-const copyContent = () => {
   const viewerEl = document.querySelector('.paper-viewer')
   if (!viewerEl) return
-  navigator.clipboard.writeText(viewerEl.innerText).then(() => {
+  
+  const printWindow = window.open('', '_blank')
+  if (!printWindow) {
+    ElMessage.error('请允许弹出窗口以打印试卷')
+    return
+  }
+  
+  const style = `
+    <style>
+      @page { size: A4; margin: 15mm; }
+      body { font-family: 'SimSun', serif; font-size: 14px; line-height: 1.6; }
+      .paper-title { text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+      .paper-meta { text-align: center; font-size: 12px; color: #666; margin-bottom: 15px; }
+      .section-title { font-size: 14px; font-weight: bold; margin-top: 15px; margin-bottom: 10px; }
+      .question-item { margin-bottom: 15px; }
+      .question-stem { margin-bottom: 10px; }
+      .question-options { margin-left: 20px; }
+      .option-item { margin-bottom: 5px; }
+      .question-answer, .question-analysis { margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
+    </style>
+  `
+  
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>变式试卷</title>
+      ${style}
+    </head>
+    <body>
+      ${viewerEl.innerHTML}
+    </body>
+    </html>
+  `)
+  
+  printWindow.document.close()
+  printWindow.onload = () => {
+    printWindow.print()
+  }
+}
+
+const copyContent = async () => {
+  const viewerEl = document.querySelector('.paper-viewer')
+  if (!viewerEl) return
+  
+  try {
+    const text = viewerEl.innerText
+    await navigator.clipboard.writeText(text)
     ElMessage.success('已复制到剪贴板')
-  })
+  } catch (err) {
+    ElMessage.error('复制失败，请手动复制')
+  }
 }
 </script>
 
 <style scoped>
 .paper-toolbar {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 8px 12px;
   background: var(--card-background);
@@ -83,7 +94,6 @@ const copyContent = () => {
   flex-shrink: 0;
 }
 
-.toolbar-left,
 .toolbar-right {
   display: flex;
   align-items: center;
@@ -102,12 +112,5 @@ const copyContent = () => {
 
 .toolbar-btn:hover {
   background: #F3F4F6;
-}
-
-.zoom-value {
-  font-size: 12px;
-  color: var(--text-secondary);
-  min-width: 36px;
-  text-align: center;
 }
 </style>

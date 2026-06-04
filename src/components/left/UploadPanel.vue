@@ -11,7 +11,9 @@
       class="uploader"
     >
       <div class="upload-area">
-        <span>点击或拖拽上传文件</span>
+        <span class="upload-icon">📁</span>
+        <span class="upload-text">点击或拖拽上传文件</span>
+        <span class="upload-hint">支持 PDF、DOC、DOCX、图片格式</span>
       </div>
     </el-upload>
     <div v-if="files.length > 0" class="file-list">
@@ -62,18 +64,35 @@ const removeFile = (index) => {
   width: 100%;
 }
 
-.el-upload .el-upload--text{
+:deep(.el-upload.el-upload--text) {
   width: 100%;
 }
 
 .upload-area {
-  padding: 12px;
+  padding: 20px 12px;
   border: 1px dashed #D1D5DB;
   border-radius: var(--border-radius);
   text-align: center;
   cursor: pointer;
   color: var(--text-secondary);
   font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.upload-icon {
+  font-size: 28px;
+}
+
+.upload-text {
+  font-size: 13px;
+}
+
+.upload-hint {
+  font-size: 11px;
+  color: #9CA3AF;
 }
 
 .file-list {
