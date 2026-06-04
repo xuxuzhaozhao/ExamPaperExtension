@@ -1,5 +1,14 @@
 <template>
   <div class="paper-toolbar">
+    <div class="toolbar-left">
+      <input 
+        v-model="fileName" 
+        type="text" 
+        class="file-name-input" 
+        :placeholder="defaultFileName"
+        @change="updateFileName"
+      />
+    </div>
     <div class="toolbar-right">
       <button class="toolbar-btn" @click="exportPDF">PDF</button>
       <button class="toolbar-btn" @click="printPaper">打印</button>
@@ -9,16 +18,34 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import html2pdf from 'html2pdf.js'
 import { ElMessage } from 'element-plus'
+import { usePaperStore } from '../../store/paper'
+
+const store = usePaperStore()
+
+const fileName = ref('')
+
+const defaultFileName = ref('')
+
+onMounted(() => {
+  defaultFileName.value = store.getDefaultFileName()
+})
+
+const updateFileName = () => {
+  store.setPaperFileName(fileName.value)
+}
 
 const exportPDF = async () => {
   const viewerEl = document.querySelector('.paper-viewer')
   if (!viewerEl) return
   await new Promise(resolve => setTimeout(resolve, 500))
+  
+  const finalFileName = fileName.value || defaultFileName.value
   html2pdf().from(viewerEl).set({
     margin: 10,
-    filename: '变式试卷.pdf',
+    filename: `${finalFileName}.pdf`,
     html2canvas: { scale: 2 }
   }).save()
 }
@@ -85,13 +112,33 @@ const copyContent = async () => {
 <style scoped>
 .paper-toolbar {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: 8px 12px;
   background: var(--card-background);
   border-radius: var(--border-radius);
   margin-bottom: 10px;
   flex-shrink: 0;
+}
+
+.toolbar-left {
+  flex: 1;
+  margin-right: 12px;
+}
+
+.file-name-input {
+  width: 100%;
+  max-width: 200px;
+  padding: 4px 8px;
+  border: 1px solid #E5E7EB;
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--text-primary);
+  background: white;
+}
+
+.file-name-input::placeholder {
+  color: #9CA3AF;
 }
 
 .toolbar-right {

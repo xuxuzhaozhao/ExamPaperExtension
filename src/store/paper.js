@@ -1,12 +1,47 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
+// 从 localStorage 读取保存的设置
+const loadSettings = () => {
+  try {
+    const saved = localStorage.getItem('paper-settings')
+    if (saved) {
+      const settings = JSON.parse(saved)
+      return {
+        difficulty: settings.difficulty ?? 6,
+        coefficient: settings.coefficient ?? 1,
+        showAnswer: settings.showAnswer ?? true,
+        showAnalysis: settings.showAnalysis ?? true
+      }
+    }
+  } catch (e) {
+    console.warn('读取 localStorage 失败:', e)
+  }
+  return {
+    difficulty: 6,
+    coefficient: 1,
+    showAnswer: true,
+    showAnalysis: true
+  }
+}
+
+// 保存设置到 localStorage
+const saveSettings = (settings) => {
+  try {
+    localStorage.setItem('paper-settings', JSON.stringify(settings))
+  } catch (e) {
+    console.warn('保存 localStorage 失败:', e)
+  }
+}
+
 export const usePaperStore = defineStore('paper', () => {
+  const savedSettings = loadSettings()
+  
   const files = ref([])
-  const difficulty = ref(6)
-  const coefficient = ref(1)
-  const showAnswer = ref(true)
-  const showAnalysis = ref(true)
+  const difficulty = ref(savedSettings.difficulty)
+  const coefficient = ref(savedSettings.coefficient)
+  const showAnswer = ref(savedSettings.showAnswer)
+  const showAnalysis = ref(savedSettings.showAnalysis)
   const paper = ref(null)
   const isGenerating = ref(false)
   
@@ -21,6 +56,9 @@ export const usePaperStore = defineStore('paper', () => {
   
   // 流式输出内容
   const streamContent = ref('')
+  
+  // 文档名称
+  const paperFileName = ref('')
 
   const addFiles = (newFiles) => {
     files.value = [...files.value, ...newFiles]
@@ -36,18 +74,54 @@ export const usePaperStore = defineStore('paper', () => {
 
   const setDifficulty = (value) => {
     difficulty.value = value
+    saveSettings({
+      difficulty: difficulty.value,
+      coefficient: coefficient.value,
+      showAnswer: showAnswer.value,
+      showAnalysis: showAnalysis.value
+    })
   }
 
   const setCoefficient = (value) => {
     coefficient.value = value
+    saveSettings({
+      difficulty: difficulty.value,
+      coefficient: coefficient.value,
+      showAnswer: showAnswer.value,
+      showAnalysis: showAnalysis.value
+    })
   }
 
   const toggleShowAnswer = () => {
     showAnswer.value = !showAnswer.value
+    saveSettings({
+      difficulty: difficulty.value,
+      coefficient: coefficient.value,
+      showAnswer: showAnswer.value,
+      showAnalysis: showAnalysis.value
+    })
   }
 
   const toggleShowAnalysis = () => {
     showAnalysis.value = !showAnalysis.value
+    saveSettings({
+      difficulty: difficulty.value,
+      coefficient: coefficient.value,
+      showAnswer: showAnswer.value,
+      showAnalysis: showAnalysis.value
+    })
+  }
+
+  const setPaperFileName = (name) => {
+    paperFileName.value = name
+  }
+
+  const getDefaultFileName = () => {
+    const today = new Date()
+    const year = today.getFullYear()
+    const month = String(today.getMonth() + 1).padStart(2, '0')
+    const day = String(today.getDate()).padStart(2, '0')
+    return `试卷${year}${month}${day}`
   }
 
   const setApiConfig = (config) => {
@@ -409,6 +483,7 @@ ${fileInfo}`
     apiModel,
     useCustomApi,
     streamContent,
+    paperFileName,
     addFiles,
     removeFile,
     clearFiles,
@@ -418,6 +493,8 @@ ${fileInfo}`
     toggleShowAnswer,
     toggleShowAnalysis,
     setApiConfig,
-    clearError
+    clearError,
+    setPaperFileName,
+    getDefaultFileName
   }
 })
