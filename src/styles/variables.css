@@ -1,0 +1,10 @@
+:root {
+  --primary-color: #2A5CAA;
+  --accent-color: #F5A623;
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --background-color: #F5F7FA;
+  --card-background: #FFFFFF;
+  --border-radius: 8px;
+  --font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}

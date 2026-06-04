@@ -1,0 +1,70 @@
+@import './variables.css';
+@import 'katex/dist/katex.min.css';
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  line-height: var(--line-height-body);
+}
+
+#app {
+  height: 100vh;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* 数学公式样式 */
+.math-block {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+  overflow-x: auto;
+  padding: 8px 0;
+}
+
+.math-inline {
+  font-size: 1.1em;
+  line-height: 1.4;
+}
+
+.math-block .katex {
+  font-size: 1.15em;
+}
+
+.math-inline .katex {
+  font-size: 1.05em;
+}
+
+.katex-display {
+  margin: 0;
+}
+
+.katex .mathnormal {
+  font-family: 'KaTeX_Main', 'Times New Roman', serif;
+}
+
+@media print {
+  .left-panel {
+    display: none !important;
+  }
+}
