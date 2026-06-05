@@ -1,5 +1,6 @@
 <template>
   <header class="app-header">
+    <img class="logo-icon" src="/favicon.ico" alt="图标" />
     <span class="logo-text">试卷变式机</span>
   </header>
 </template>
@@ -12,6 +13,13 @@
   height: 48px;
   display: flex;
   align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
 }
 
 .logo-text {
