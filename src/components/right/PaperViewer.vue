@@ -29,7 +29,7 @@
     <!-- 试卷内容 -->
     <div v-else-if="paper && paper.questions && paper.questions.length > 0" class="paper-content">
       <div class="paper-header">
-        <h1 class="paper-title">{{ paper.title || '变式试卷' }}</h1>
+        <h1 class="paper-title">{{ displayTitle }}</h1>
         <div class="paper-meta">
           <span v-if="paper.meta?.difficulty">难度：{{ paper.meta.difficulty }}</span>
           <span v-if="paper.meta?.coefficient">系数：{{ paper.meta.coefficient }}</span>
@@ -78,6 +78,20 @@ const showAnswer = computed(() => store.showAnswer)
 const showAnalysis = computed(() => store.showAnalysis)
 const streamContent = computed(() => store.streamContent)
 const error = computed(() => store.error)
+const paperFileName = computed(() => store.paperFileName)
+
+const displayTitle = computed(() => {
+  // 优先使用输入框中的文件名
+  if (paperFileName.value) {
+    return paperFileName.value
+  }
+  // 其次使用 paper 的标题
+  if (paper.value && paper.value.title) {
+    return paper.value.title
+  }
+  // 最后使用默认文件名
+  return store.getDefaultFileName()
+})
 const clearError = () => store.clearError()
 </script>
 

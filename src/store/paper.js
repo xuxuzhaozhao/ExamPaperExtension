@@ -213,7 +213,7 @@ export const usePaperStore = defineStore('paper', () => {
 
 输出格式示例：
 {
-  "title": "变式试卷",
+  "title": "${getDefaultFileName()}",
   "questions": [...]
 }`
 

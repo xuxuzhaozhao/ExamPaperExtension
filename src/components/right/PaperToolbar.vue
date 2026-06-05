@@ -6,7 +6,7 @@
         type="text" 
         class="file-name-input" 
         :placeholder="defaultFileName"
-        @change="updateFileName"
+        @input="updateFileName"
       />
     </div>
     <div class="toolbar-right">
@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import html2pdf from 'html2pdf.js'
 import { ElMessage } from 'element-plus'
 import { usePaperStore } from '../../store/paper'
@@ -31,11 +31,24 @@ const defaultFileName = ref('')
 
 onMounted(() => {
   defaultFileName.value = store.getDefaultFileName()
+  // 如果 store 中有保存的文件名，使用它
+  if (store.paperFileName) {
+    fileName.value = store.paperFileName
+  }
 })
 
 const updateFileName = () => {
   store.setPaperFileName(fileName.value)
 }
+
+// 监听 paper 的变化，更新标题
+watch(() => store.paper, (newPaper) => {
+  if (newPaper && newPaper.title && !fileName.value) {
+    // 如果 paper 有标题且输入框为空，使用 paper 的标题
+    fileName.value = newPaper.title
+    store.setPaperFileName(fileName.value)
+  }
+})
 
 const exportPDF = async () => {
   const viewerEl = document.querySelector('.paper-viewer')
@@ -158,8 +171,8 @@ const copyContent = async () => {
 }
 
 .toolbar-btn:hover {
-  background: var(--primary-color);
+  background: #e85a8a;
   color: white;
-  border-color: var(--primary-color);
+  border-color: #e85a8a;
 }
 </style>

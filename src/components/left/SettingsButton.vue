@@ -9,7 +9,7 @@
       <div v-if="showSettings" class="settings-modal-overlay" @click.self="closeModal">
         <div class="settings-modal">
           <div class="modal-header">
-            <h3>API 设置</h3>
+            <h3>设置</h3>
             <button class="close-btn" @click="closeModal">×</button>
           </div>
           <div class="modal-body">
@@ -40,6 +40,65 @@
                 class="form-input"
               />
             </div>
+            
+            <!-- 主题色设置 -->
+            <div class="section-divider"></div>
+            <div class="form-item">
+              <label>主题色设置</label>
+              <div class="color-picker-container">
+                <div class="color-item">
+                  <label class="color-label">上面（标题栏）</label>
+                  <div class="color-input-wrapper">
+                    <input 
+                      type="color" 
+                      v-model="primaryColor" 
+                      class="color-input"
+                    />
+                    <input 
+                      type="text" 
+                      v-model="primaryColor" 
+                      class="color-hex-input"
+                      placeholder="#00A1D6"
+                    />
+                  </div>
+                </div>
+                <div class="color-item">
+                  <label class="color-label">下面（按钮等）</label>
+                  <div class="color-input-wrapper">
+                    <input 
+                      type="color" 
+                      v-model="accentColor" 
+                      class="color-input"
+                    />
+                    <input 
+                      type="text" 
+                      v-model="accentColor" 
+                      class="color-hex-input"
+                      placeholder="#00A1D6"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="preset-colors">
+                <span class="preset-label">预设配色：</span>
+                <button 
+                  v-for="preset in colorPresets" 
+                  :key="preset.name"
+                  class="preset-btn"
+                  :title="preset.name"
+                  @click="applyPreset(preset)"
+                >
+                  <span 
+                    class="preset-color" 
+                    :style="{ background: preset.primary }"
+                  ></span>
+                  <span 
+                    class="preset-color" 
+                    :style="{ background: preset.accent }"
+                  ></span>
+                </button>
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
             <button class="btn-cancel" @click="closeModal">取消</button>
@@ -61,10 +120,23 @@ const localApiUrl = ref('https://api.deepseek.com/v1/chat/completions')
 const localApiKey = ref('')
 const localApiModel = ref('deepseek-v4-flash')
 
+// 主题色
+const primaryColor = ref('#00A1D6')
+const accentColor = ref('#00A1D6')
+
+// 预设配色
+const colorPresets = [
+  { name: '哔哩哔哩', primary: '#00A1D6', accent: '#FB7299' },
+  { name: '微信', primary: '#07C160', accent: '#1989FA' },
+  { name: '抖音', primary: '#000000', accent: '#FE2C55' },
+  { name: '小红书', primary: '#FF2442', accent: '#FF6B8A' },
+]
+
 const STORAGE_KEY = 'exam_variator_api_config'
+const THEME_STORAGE_KEY = 'exam_variator_theme_config'
 
 onMounted(() => {
-  // 优先从 localStorage 加载配置
+  // 加载 API 配置
   const savedConfig = localStorage.getItem(STORAGE_KEY)
   if (savedConfig) {
     try {
@@ -72,7 +144,6 @@ onMounted(() => {
       localApiUrl.value = config.apiUrl || 'https://api.deepseek.com/v1/chat/completions'
       localApiKey.value = config.apiKey || ''
       localApiModel.value = config.apiModel || 'deepseek-v4-flash'
-      // 同步到 store
       store.setApiConfig({
         apiUrl: localApiUrl.value,
         apiKey: localApiKey.value,
@@ -83,6 +154,22 @@ onMounted(() => {
       console.error('加载配置失败:', e)
     }
   }
+  
+  // 加载主题色配置
+  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
+  if (savedTheme) {
+    try {
+      const theme = JSON.parse(savedTheme)
+      primaryColor.value = theme.primaryColor || '#00A1D6'
+      accentColor.value = theme.accentColor || '#FB7299'
+      applyTheme(primaryColor.value, accentColor.value)
+    } catch (e) {
+      console.error('加载主题配置失败:', e)
+    }
+  } else {
+    // 应用默认主题
+    applyTheme(primaryColor.value, accentColor.value)
+  }
 })
 
 const closeModal = () => {
@@ -90,7 +177,7 @@ const closeModal = () => {
 }
 
 const saveSettings = () => {
-  // 保存到 localStorage
+  // 保存 API 配置
   const config = {
     apiUrl: localApiUrl.value,
     apiKey: localApiKey.value,
@@ -98,7 +185,6 @@ const saveSettings = () => {
   }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(config))
   
-  // 同步到 store
   store.setApiConfig({
     apiUrl: localApiUrl.value,
     apiKey: localApiKey.value,
@@ -106,21 +192,37 @@ const saveSettings = () => {
     useCustomApi: !!localApiUrl.value
   })
   
-  // 关闭弹框
-  showSettings.value = false
+  // 保存主题色配置
+  const themeConfig = {
+    primaryColor: primaryColor.value,
+    accentColor: accentColor.value
+  }
+  localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(themeConfig))
   
-  // 显示保存成功提示
+  // 应用主题色
+  applyTheme(primaryColor.value, accentColor.value)
+  
+  showSettings.value = false
   showToast('配置保存成功！')
 }
 
+const applyTheme = (primary, accent) => {
+  const root = document.documentElement
+  root.style.setProperty('--primary-color', primary)
+  root.style.setProperty('--accent-color', accent)
+}
+
+const applyPreset = (preset) => {
+  primaryColor.value = preset.primary
+  accentColor.value = preset.accent
+}
+
 const showToast = (message) => {
-  // 创建提示元素
   const toast = document.createElement('div')
   toast.className = 'api-config-toast'
   toast.textContent = message
   document.body.appendChild(toast)
   
-  // 3秒后移除
   setTimeout(() => {
     toast.classList.add('fade-out')
     setTimeout(() => {
@@ -245,6 +347,100 @@ const showToast = (message) => {
 .form-input:focus {
   outline: none;
   border-color: var(--accent-color);
+}
+
+/* 主题色设置样式 */
+.section-divider {
+  height: 1px;
+  background: #E5E7EB;
+  margin: 16px 0;
+}
+
+.color-picker-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.color-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.color-label {
+  font-size: 12px;
+  color: #6B7280;
+  font-weight: 400;
+}
+
+.color-input-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.color-input {
+  width: 40px;
+  height: 36px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.color-input:hover {
+  border-color: var(--accent-color);
+}
+
+.color-hex-input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #D1D5DB;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: monospace;
+  box-sizing: border-box;
+}
+
+.color-hex-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.preset-colors {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.preset-label {
+  font-size: 12px;
+  color: #6B7280;
+}
+
+.preset-btn {
+  display: flex;
+  gap: 3px;
+  padding: 4px;
+  border: 1px solid #E5E7EB;
+  border-radius: 4px;
+  cursor: pointer;
+  background: white;
+  transition: all 0.2s;
+}
+
+.preset-btn:hover {
+  border-color: var(--accent-color);
+  background: #F9FAFB;
+}
+
+.preset-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
 }
 
 .modal-footer {
