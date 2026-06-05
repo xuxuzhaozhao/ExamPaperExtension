@@ -244,7 +244,7 @@ const showToast = (message) => {
 
 .form-input:focus {
   outline: none;
-  border-color: var(--primary-color);
+  border-color: var(--accent-color);
 }
 
 .modal-footer {
@@ -275,12 +275,12 @@ const showToast = (message) => {
 
 .btn-save {
   border: none;
-  background: var(--primary-color);
+  background: var(--accent-color);
   color: white;
 }
 
 .btn-save:hover {
-  background: var(--primary-hover);
+  background: #e85a8a;
 }
 
 /* Toast 样式 */

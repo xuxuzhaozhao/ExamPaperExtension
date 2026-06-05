@@ -57,7 +57,27 @@ const coefficientTags = ['紧贴', '接近', '关联', '拓展', '综合', '发�
 }
 
 .tag.active {
-  background: var(--primary-color);
+  background: var(--accent-color);
   color: white;
+}
+
+:deep(.el-slider__runway) {
+  background-color: #E5E7EB;
+}
+
+:deep(.el-slider__bar) {
+  background-color: var(--accent-color);
+}
+
+:deep(.el-slider__button) {
+  border-color: var(--accent-color);
+}
+
+:deep(.el-slider__button:hover) {
+  border-color: #e85a8a;
+}
+
+:deep(.el-slider__stop) {
+  background-color: #E5E7EB;
 }
 </style>

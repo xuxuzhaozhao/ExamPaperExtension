@@ -149,15 +149,17 @@ const copyContent = async () => {
 
 .toolbar-btn {
   padding: 4px 10px;
-  background: transparent;
-  border: 1px solid #E5E7EB;
+  background: var(--accent-color);
+  border: 1px solid var(--accent-color);
   border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
-  color: var(--text-primary);
+  color: white;
 }
 
 .toolbar-btn:hover {
-  background: #F3F4F6;
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
 }
 </style>

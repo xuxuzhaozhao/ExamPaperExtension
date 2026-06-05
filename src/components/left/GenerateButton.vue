@@ -36,4 +36,14 @@ const generatePaper = async () => {
   height: 36px;
   font-size: 13px;
 }
+
+.generate-btn {
+  background: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+}
+
+.generate-btn:hover {
+  background: #e85a8a !important;
+  border-color: #e85a8a !important;
+}
 </style>

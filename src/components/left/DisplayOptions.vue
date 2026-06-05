@@ -46,4 +46,21 @@ const showAnalysis = computed({
 .el-checkbox {
   font-size: 12px;
 }
+
+:deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+:deep(.el-checkbox__input.is-checked + .el-checkbox__label) {
+  color: var(--accent-color);
+}
+
+:deep(.el-checkbox__inner:hover) {
+  border-color: var(--accent-color);
+}
+
+:deep(.el-checkbox__input.is-focus .el-checkbox__inner) {
+  border-color: var(--accent-color);
+}
 </style>

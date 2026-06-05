@@ -46,4 +46,24 @@ const difficulty = computed({
   color: var(--text-secondary);
   margin-top: 4px;
 }
+
+:deep(.el-slider__runway) {
+  background-color: #E5E7EB;
+}
+
+:deep(.el-slider__bar) {
+  background-color: var(--accent-color);
+}
+
+:deep(.el-slider__button) {
+  border-color: var(--accent-color);
+}
+
+:deep(.el-slider__button:hover) {
+  border-color: #e85a8a;
+}
+
+:deep(.el-slider__stop) {
+  background-color: #E5E7EB;
+}
 </style>
