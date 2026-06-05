@@ -11,7 +11,7 @@
       class="uploader"
     >
       <div class="upload-area">
-        <span class="upload-icon">📁</span>
+        <span class="upload-icon">📄</span>
         <span class="upload-text">点击或拖拽上传文件</span>
         <span class="upload-hint">支持 PDF、DOC、DOCX、图片格式</span>
       </div>
